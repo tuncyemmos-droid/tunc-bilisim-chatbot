@@ -1,0 +1,226 @@
+.chat-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  height: 560px;
+  max-height: calc(100vh - 48px);
+  background: var(--color-surface);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px -12px rgba(23, 27, 38, 0.28), 0 0 0 1px rgba(23, 27, 38, 0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  font-family: var(--font-body);
+  animation: chat-pop-in 0.22s ease-out;
+}
+
+@keyframes chat-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.chat-header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-soft) 130%);
+  color: white;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.chat-header-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.chat-header-subtitle {
+  font-size: 12px;
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
+.chat-close {
+  background: none;
+  border: none;
+  color: white;
+  opacity: 0.8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.chat-close:hover {
+  opacity: 1;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-bg);
+}
+
+.chat-bubble-row {
+  display: flex;
+}
+
+.chat-bubble-row.user {
+  justify-content: flex-end;
+}
+
+.chat-bubble-row.assistant {
+  justify-content: flex-start;
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 11px 15px;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 1px 2px rgba(23, 27, 38, 0.04);
+}
+
+.chat-bubble.user {
+  background: var(--color-user-bubble);
+  color: var(--color-ink);
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.assistant {
+  background: var(--color-bot-bubble);
+  color: white;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 4px 12px -4px rgba(31, 42, 82, 0.35);
+}
+
+/* Sinyal öğesi: bot "düşünürken" üç nokta yerine küçük bir sparkline
+   pulse animasyonu. */
+.chat-bubble.thinking {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  padding: 14px 16px;
+}
+
+.pulse-bar {
+  width: 3px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 2px;
+  animation: pulse-grow 1s ease-in-out infinite;
+}
+
+.pulse-bar:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.pulse-bar:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pulse-grow {
+  0%, 100% { height: 6px; opacity: 0.6; }
+  50% { height: 16px; opacity: 1; }
+}
+
+.chat-quick-replies {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chat-quick-replies button {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.chat-quick-replies button:hover {
+  border-color: var(--color-primary-soft);
+  background: var(--color-user-bubble);
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 14px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.chat-input-row input[type='text']:not(.chat-honeypot) {
+  flex: 1;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chat-input-row input[type='text']:not(.chat-honeypot):focus {
+  border-color: var(--color-primary-soft);
+  box-shadow: 0 0 0 3px rgba(31, 42, 82, 0.08);
+}
+
+.chat-input-row input[type='text']:not(.chat-honeypot):disabled {
+  background: var(--color-bg);
+}
+
+.chat-input-row button[type='submit'] {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.chat-input-row button[type='submit']:hover:not(:disabled) {
+  background: var(--color-primary-soft);
+}
+
+.chat-input-row button[type='submit']:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Honeypot alanı: gerçek kullanıcıdan tamamen gizli. */
+.chat-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+@media (max-width: 480px) {
+  .chat-widget {
+    right: 16px;
+    left: 16px;
+    width: auto;
+    bottom: 16px;
+  }
+}

@@ -1,0 +1,134 @@
+.admin {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 6px;
+}
+
+.admin-header h1 {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.admin-back-link {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+}
+
+.admin-back-link:hover {
+  color: var(--color-primary);
+}
+
+.admin-status {
+  color: var(--color-ink-soft);
+  font-size: 14px;
+}
+
+.admin-error {
+  color: var(--urgency-hemen);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(23, 27, 38, 0.06);
+}
+
+.admin-table th {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+  font-weight: 500;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-summary {
+  color: var(--color-ink-soft);
+  max-width: 320px;
+}
+
+.admin-date {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+
+.admin-email {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.urgency-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.urgency-pill.urgency-hemen {
+  background: var(--urgency-hemen-bg);
+  color: var(--urgency-hemen);
+}
+
+.urgency-pill.urgency-week {
+  background: var(--urgency-week-bg);
+  color: var(--urgency-week);
+}
+
+.urgency-pill.urgency-info {
+  background: var(--urgency-info-bg);
+  color: var(--urgency-info);
+}
+
+@media (max-width: 700px) {
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

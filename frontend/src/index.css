@@ -1,0 +1,58 @@
+/* Design tokens — NextReach bir e-ticaret analitik SaaS'ı olduğu için
+   kimliği "veriye dayalı ama soğuk değil" bir yerde konumlandırdım:
+   derin indigo + ölçülü bir amber vurgu, sparkline'dan ilham alan ince
+   dokunuşlar (bkz. ChatWidget'taki "düşünüyor" göstergesi). */
+
+:root {
+  --color-bg: #F5F6F8;
+  --color-surface: #FFFFFF;
+  --color-ink: #171B26;
+  --color-ink-soft: #565F73;
+  --color-border: #E3E5EA;
+
+  --color-primary: #1F2A52;
+  --color-primary-soft: #2E3B6E;
+  --color-accent: #D98B3B;
+
+  --color-user-bubble: #EEF1F7;
+  --color-bot-bubble: #1F2A52;
+
+  --urgency-hemen: #DB5461;
+  --urgency-hemen-bg: #FBE8EA;
+  --urgency-week: #C6822A;
+  --urgency-week-bg: #FBF0DF;
+  --urgency-info: #6B7280;
+  --urgency-info-bg: #F0F1F3;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary-soft);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
