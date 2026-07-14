@@ -22,9 +22,11 @@ function formatDate(dateString) {
     return '—';
   }
 
-  const date = new Date(
-    dateString.endsWith('Z') ? dateString : `${dateString}Z`
-  );
+  const normalizedDate = dateString.endsWith('Z')
+    ? dateString
+    : `${dateString}Z`;
+
+  const date = new Date(normalizedDate);
 
   if (Number.isNaN(date.getTime())) {
     return '—';
@@ -43,34 +45,69 @@ export default function Admin() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetch('/api/leads')
-      .then((response) => {
+    async function loadLeads() {
+      try {
+        const response = await fetch('/api/leads');
+
         if (!response.ok) {
-          throw new Error('Veriler alınamadı.');
+          throw new Error('Talepler alınamadı.');
         }
 
-        return response.json();
-      })
-      .then((data) => {
-        setLeads(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
+        const data = await response.json();
+
+        setLeads(Array.isArray(data) ? data : []);
+      } catch (loadError) {
+        console.error(loadError);
         setError('Talepler yüklenirken bir sorun oluştu.');
+      } finally {
         setLoading(false);
-      });
+      }
+    }
+
+    loadLeads();
   }, []);
 
+  const stats = {
+    total: leads.length,
+
+    urgent: leads.filter(
+      (lead) => lead.urgency === 'hemen'
+    ).length,
+
+    week: leads.filter(
+      (lead) => lead.urgency === 'bu_hafta'
+    ).length,
+
+    info: leads.filter(
+      (lead) => lead.urgency === 'sadece_bilgi'
+    ).length,
+  };
+
   const filteredLeads = leads.filter((lead) => {
-    const search = searchTerm.toLocaleLowerCase('tr-TR');
+    const search = searchTerm
+      .trim()
+      .toLocaleLowerCase('tr-TR');
+
+    if (!search) {
+      return true;
+    }
+
+    const name = String(
+      lead.name || ''
+    ).toLocaleLowerCase('tr-TR');
+
+    const email = String(
+      lead.email || ''
+    ).toLocaleLowerCase('tr-TR');
+
+    const summary = String(
+      lead.need_summary || ''
+    ).toLocaleLowerCase('tr-TR');
 
     return (
-      (lead.name || '').toLocaleLowerCase('tr-TR').includes(search) ||
-      (lead.email || '').toLocaleLowerCase('tr-TR').includes(search) ||
-      (lead.need_summary || '')
-        .toLocaleLowerCase('tr-TR')
-        .includes(search)
+      name.includes(search) ||
+      email.includes(search) ||
+      summary.includes(search)
     );
   });
 
@@ -78,7 +115,10 @@ export default function Admin() {
     <main className="admin">
       <header className="admin-header">
         <div>
-          <div className="admin-eyebrow">Tunç Bilişim</div>
+          <div className="admin-eyebrow">
+            Tunç Bilişim
+          </div>
+
           <h1>Gelen Talepler</h1>
         </div>
 
@@ -88,95 +128,148 @@ export default function Admin() {
       </header>
 
       {loading && (
-        <p className="admin-status">Talepler yükleniyor...</p>
+        <p className="admin-status">
+          Talepler yükleniyor...
+        </p>
       )}
 
-      {error && (
-        <p className="admin-status admin-error">{error}</p>
+      {!loading && error && (
+        <p className="admin-status admin-error">
+          {error}
+        </p>
       )}
 
-      {!loading && !error && leads.length === 0 && (
-        <p className="admin-status">Henüz gelen bir talep yok.</p>
-      )}
-
-      {!loading && !error && leads.length > 0 && (
+      {!loading && !error && (
         <>
-          <div className="admin-toolbar">
-            <input
-              className="admin-search"
-              type="search"
-              placeholder="İsim, e-posta veya ihtiyaç ara..."
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-            />
+          <section className="admin-stats">
+            <article className="admin-stat-card">
+              <span className="admin-stat-label">
+                Toplam Talep
+              </span>
 
-            <span className="admin-result-count">
-              {filteredLeads.length} talep
-            </span>
-          </div>
+              <strong className="admin-stat-value">
+                {stats.total}
+              </strong>
+            </article>
 
-          {filteredLeads.length === 0 ? (
+            <article className="admin-stat-card">
+              <span className="admin-stat-label">
+                Hemen
+              </span>
+
+              <strong className="admin-stat-value">
+                {stats.urgent}
+              </strong>
+            </article>
+
+            <article className="admin-stat-card">
+              <span className="admin-stat-label">
+                Bu Hafta
+              </span>
+
+              <strong className="admin-stat-value">
+                {stats.week}
+              </strong>
+            </article>
+
+            <article className="admin-stat-card">
+              <span className="admin-stat-label">
+                Sadece Bilgi
+              </span>
+
+              <strong className="admin-stat-value">
+                {stats.info}
+              </strong>
+            </article>
+          </section>
+
+          {leads.length === 0 ? (
             <p className="admin-status">
-              Aramanızla eşleşen talep bulunamadı.
+              Henüz gelen bir talep yok.
             </p>
           ) : (
-            <div className="admin-table-wrapper">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>İsim</th>
-                    <th>İhtiyaç Özeti</th>
-                    <th>Aciliyet</th>
-                    <th>E-posta</th>
-                    <th>Tarih</th>
-                  </tr>
-                </thead>
+            <>
+              <div className="admin-toolbar">
+                <input
+                  className="admin-search"
+                  type="search"
+                  placeholder="İsim, e-posta veya ihtiyaç ara..."
+                  value={searchTerm}
+                  onChange={(event) =>
+                    setSearchTerm(event.target.value)
+                  }
+                  aria-label="Taleplerde ara"
+                />
 
-                <tbody>
-                  {filteredLeads.map((lead) => {
-                    const urgency =
-                      URGENCY_META[lead.urgency] || {
-                        label: 'Belirtilmedi',
-                        className: 'urgency-info',
-                      };
+                <span className="admin-result-count">
+                  {filteredLeads.length} talep
+                </span>
+              </div>
 
-                    return (
-                      <tr key={lead.id}>
-                        <td className="admin-name">
-                          {lead.name || '—'}
-                        </td>
-
-                        <td className="admin-summary">
-                          {lead.need_summary || '—'}
-                        </td>
-
-                        <td>
-                          <span
-                            className={`urgency-pill ${urgency.className}`}
-                          >
-                            {urgency.label}
-                          </span>
-                        </td>
-
-                        <td className="admin-email">
-                          {lead.email ? (
-                            <a href={`mailto:${lead.email}`}>
-                              {lead.email}
-                            </a>
-                          ) : (
-                            <em>Paylaşılmadı</em>
-                          )}
-                        </td>
-
-                        <td className="admin-date">
-                          {formatDate(lead.created_at)}
-                        </td>
+              {filteredLeads.length === 0 ? (
+                <p className="admin-status">
+                  Aramanızla eşleşen talep bulunamadı.
+                </p>
+              ) : (
+                <div className="admin-table-wrapper">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>İsim</th>
+                        <th>İhtiyaç Özeti</th>
+                        <th>Aciliyet</th>
+                        <th>E-posta</th>
+                        <th>Tarih</th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                    </thead>
+
+                    <tbody>
+                      {filteredLeads.map((lead) => {
+                        const urgency =
+                          URGENCY_META[lead.urgency] || {
+                            label: 'Belirtilmedi',
+                            className: 'urgency-info',
+                          };
+
+                        return (
+                          <tr key={lead.id}>
+                            <td className="admin-name">
+                              {lead.name || '—'}
+                            </td>
+
+                            <td className="admin-summary">
+                              {lead.need_summary || '—'}
+                            </td>
+
+                            <td>
+                              <span
+                                className={`urgency-pill ${urgency.className}`}
+                              >
+                                {urgency.label}
+                              </span>
+                            </td>
+
+                            <td className="admin-email">
+                              {lead.email ? (
+                                <a href={`mailto:${lead.email}`}>
+                                  {lead.email}
+                                </a>
+                              ) : (
+                                <em>Paylaşılmadı</em>
+                              )}
+                            </td>
+
+                            <td className="admin-date">
+                              {formatDate(lead.created_at)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
