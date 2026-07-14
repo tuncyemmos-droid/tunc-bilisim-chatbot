@@ -111,7 +111,7 @@ async function handleMessage(sessionId, userMessage, ipAddress) {
           need_question_count: questionCount,
         });
         nextStage = 'urgency';
-        reply = `${llmResult.reply} Bir de merak ediyorum: bu sizin için ne kadar acil? "Hemen konuşmak istiyorum", "Bu hafta içinde" veya "Sadece bilgi alıyorum" diyebilirsiniz.`;
+       reply = llmResult.reply;
       } else {
         updateConversation(sessionId, { need_question_count: questionCount });
         reply = llmResult.reply;
